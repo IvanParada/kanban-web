@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef, ChangeDetectorRef, signal } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TasksService } from './services/task.service';
@@ -6,13 +6,14 @@ import { Task, TaskState } from './interfaces/task.models';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ColumnsComponent } from "./components/columns/columns.component";
 import { SkeletonComponent } from "./components/skeleton/skeleton.component";
+import { TaskDetailComponent } from "./components/task-detail/task-detail.component";
 
 export type TaskColumns = Record<TaskState, Task[]>;
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [DragDropModule, ColumnsComponent, SkeletonComponent],
+  imports: [DragDropModule, ColumnsComponent, SkeletonComponent, TaskDetailComponent],
   templateUrl: './task.component.html',
 })
 export default class TaskComponent implements OnInit {
@@ -61,7 +62,6 @@ export default class TaskComponent implements OnInit {
           this.tasks = tasks;
           this.buildColumns(tasks);
           this.cdr.markForCheck();
-          console.log(this.columns);
         },
         error: (err) => {
           this.errorMsg =
@@ -108,5 +108,19 @@ export default class TaskComponent implements OnInit {
         }
       });
   }
+
+
+  readonly drawerOpen = signal(false);
+  readonly selectedTask = signal<Task | null>(null);
+
+  onTaskSelected(task: Task) {
+    this.selectedTask.set(task);
+    this.drawerOpen.set(true);
+  }
+
+  closeDrawer() {
+    this.drawerOpen.set(false);
+  }
+
 
 }

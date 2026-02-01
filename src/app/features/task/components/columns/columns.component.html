@@ -3,21 +3,18 @@
     <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
 
-            <h3 class="font-semibold">{{ title }}</h3>
+            <h3 class="font-semibold" [ngClass]="titleClass">{{ title }}</h3>
             <span class="badge" [ngClass]="badgeClass">{{ tasks.length }}</span>
         </div>
-        <button type="button"
-            class="btn btn-sm bg-black text-white d-inline-flex align-items-center justify-content-center text-lg"
-            style="width: 2.25rem; height: 2.25rem; border-radius: .6rem;">
-            +
-        </button>
+        <app-create-task [state]="id"></app-create-task>
 
     </div>
 
     <div class="flex flex-col gap-4 min-h-10">
         @for (task of tasks; track task.id) {
         <div cdkDrag [cdkDragData]="task" class="cursor-grab active:cursor-grabbing">
-            <app-card [title]="task.title" [description]="task.description" [createdAt]="task.createdAt"></app-card>
+            <app-card [title]="task.title" [description]="task.description" [createdAt]="task.createdAt"
+                [taskId]="task.id" (taskSelected)="onTaskSelected($event)"></app-card>
 
             <ng-template cdkDragPlaceholder>
                 <div class="rounded-lg border border-dashed bg-base-100/60 p-10"></div>
