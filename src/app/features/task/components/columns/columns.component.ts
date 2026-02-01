@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { DragDropModule, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
-import { CardComponent } from "../card.component/card.component";
+import { CardComponent } from "../card/card.component";
 import { Task } from "../../interfaces/task.models";
 
 export type ColumnId = 'TODO' | 'PENDING' | 'IN_PROGRESS' | 'DONE';

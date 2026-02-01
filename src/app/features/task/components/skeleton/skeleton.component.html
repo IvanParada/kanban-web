@@ -1,0 +1,31 @@
+<div class="grid grid-cols-1 gap-6 mx-10 my-5 md:grid-cols-2 xl:grid-cols-4">
+
+  @for (col of columns; track $index) {
+  <div class="rounded-xl p-4 space-y-4" [ngClass]="col.bgClass">
+
+    <div class="flex items-center justify-between">
+      <div class="skeleton h-4 w-24"></div>
+      <div class="skeleton h-5 w-6 rounded-full"></div>
+    </div>
+
+    @for (i of range(col.cards); track i) {
+    <div class="card bg-base-100 shadow">
+      <div class="card-body gap-3">
+
+        <div class="skeleton h-4" [ngClass]="i % 2 === 0 ? 'w-3/4' : 'w-2/3'"></div>
+
+        <div class="space-y-2">
+          <div class="skeleton h-3 w-full"></div>
+          <div class="skeleton h-3" [ngClass]="i % 2 === 0 ? 'w-5/6' : 'w-4/6'"></div>
+        </div>
+
+        <div class="skeleton h-3" [ngClass]="i % 2 === 0 ? 'w-28' : 'w-24'"></div>
+
+      </div>
+    </div>
+    }
+
+  </div>
+  }
+
+</div>

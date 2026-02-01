@@ -1,4 +1,4 @@
-<section [ngClass]="bgClass" class="rounded-lg p-4" cdkDropList [id]="id" [cdkDropListData]="tasks"
+<section [ngClass]="bgClass" class="rounded-lg p-4 h-full" cdkDropList [id]="id" [cdkDropListData]="tasks"
     [cdkDropListConnectedTo]="connectedTo" (cdkDropListDropped)="onDrop($event)">
     <div class="flex items-center justify-between mb-3">
         <h3 class="font-semibold">{{ title }}</h3>

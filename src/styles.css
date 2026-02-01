@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-    themes: pastel --default;
+    themes: fantasy --default, coffee, dim, luxury, caramellatte, retro, corporate;
+}
+
+html,
+body {
+    height: 90%;
+}
+
+body {
+    margin: 0;
 }

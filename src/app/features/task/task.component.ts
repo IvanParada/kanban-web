@@ -4,14 +4,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TasksService } from './services/task.service';
 import { Task, TaskState } from './interfaces/task.models';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { ColumnsComponent } from "./components/columns.component/columns.component";
+import { ColumnsComponent } from "./components/columns/columns.component";
+import { SkeletonComponent } from "./components/skeleton/skeleton.component";
 
 export type TaskColumns = Record<TaskState, Task[]>;
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [DragDropModule, ColumnsComponent],
+  imports: [DragDropModule, ColumnsComponent, SkeletonComponent],
   templateUrl: './task.component.html',
 })
 export default class TaskComponent implements OnInit {

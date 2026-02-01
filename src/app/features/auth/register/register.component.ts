@@ -37,9 +37,7 @@ export default class RegisterComponent {
                 this._router.navigateByUrl('/');
             },
             error: (err) => {
-                console.error('Register error', err);
-                // Handle specific errors potentially from backend
-                this.errorMessage.set('Registration failed. Please try again.');
+                this.errorMessage.set('Registro fallido. Por favor, intenta de nuevo.');
                 setTimeout(() => this.errorMessage.set(null), 3000);
             }
         });

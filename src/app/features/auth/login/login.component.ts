@@ -36,9 +36,7 @@ export default class LoginComponent {
                 this._router.navigateByUrl('/');
             },
             error: (err) => {
-                console.error('Login error', err);
-                this.errorMessage.set('Invalid credentials or server error');
-                // Clear error after 3 seconds
+                this.errorMessage.set('Credenciales inválidas');
                 setTimeout(() => this.errorMessage.set(null), 3000);
             }
         });
