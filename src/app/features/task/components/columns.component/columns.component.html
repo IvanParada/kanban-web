@@ -1,0 +1,26 @@
+<section [ngClass]="bgClass" class="rounded-lg p-4" cdkDropList [id]="id" [cdkDropListData]="tasks"
+    [cdkDropListConnectedTo]="connectedTo" (cdkDropListDropped)="onDrop($event)">
+    <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold">{{ title }}</h3>
+        <span class="badge" [ngClass]="badgeClass">{{ tasks.length }}</span>
+    </div>
+
+    <div class="flex flex-col gap-4 min-h-10">
+        @for (task of tasks; track task.id) {
+        <div cdkDrag [cdkDragData]="task" class="cursor-grab active:cursor-grabbing">
+            <app-card [title]="task.title" [description]="task.description" [createdAt]="task.createdAt"></app-card>
+
+            <ng-template cdkDragPlaceholder>
+                <div class="rounded-lg border border-dashed bg-base-100/60 p-10"></div>
+            </ng-template>
+
+            <ng-template cdkDragPreview>
+                <div class="w-96 rounded-lg bg-base-100 drop-shadow-lg shadow p-4 opacity-90">
+                    <div class="font-semibold">{{ task.title }}</div>
+                    <div class="text-sm text-gray-600 line-clamp-2">{{ task.description }}</div>
+                </div>
+            </ng-template>
+        </div>
+        }
+    </div>
+</section>

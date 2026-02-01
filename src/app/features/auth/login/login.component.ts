@@ -1,0 +1,46 @@
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { CommonModule } from '@angular/common';
+
+@Component({
+    selector: 'app-login',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, RouterLink],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.css'
+})
+export default class LoginComponent {
+    private _fb = inject(FormBuilder);
+    private _authService = inject(AuthService);
+    private _router = inject(Router);
+
+    loginForm: FormGroup = this._fb.group({
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+
+    errorMessage = signal<string | null>(null);
+
+    onSubmit() {
+        if (this.loginForm.invalid) {
+            this.loginForm.markAllAsTouched();
+            return;
+        }
+
+        const { email, password } = this.loginForm.value;
+
+        this._authService.login(email, password).subscribe({
+            next: () => {
+                this._router.navigateByUrl('/');
+            },
+            error: (err) => {
+                console.error('Login error', err);
+                this.errorMessage.set('Invalid credentials or server error');
+                // Clear error after 3 seconds
+                setTimeout(() => this.errorMessage.set(null), 3000);
+            }
+        });
+    }
+}

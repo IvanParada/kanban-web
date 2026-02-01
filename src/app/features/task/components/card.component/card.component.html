@@ -1,0 +1,10 @@
+<div class="card bg-base-100 w-96 drop-shadow-lg shadow w-auto">
+    <div class="card-body">
+        <h2 class="card-title">
+            {{ title }}
+        </h2>
+        <p class="text-sm text-gray-600 line-clamp-2">{{ description }}</p>
+        <p class="text-xs text-gray-500">{{ createdAt | date: 'dd/MM/yyyy, HH:mm' }}</p>
+
+    </div>
+</div>
