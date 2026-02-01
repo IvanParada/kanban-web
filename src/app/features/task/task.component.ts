@@ -1,10 +1,8 @@
 import { Component, OnInit, inject, DestroyRef, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
 import { finalize, timeout } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TasksService } from './services/task.service';
 import { Task, TaskState } from './interfaces/task.models';
-import { CardComponent } from "./components/card.component/card.component";
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ColumnsComponent } from "./components/columns.component/columns.component";
 
@@ -13,9 +11,8 @@ export type TaskColumns = Record<TaskState, Task[]>;
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [CommonModule, CardComponent, DragDropModule, ColumnsComponent],
+  imports: [DragDropModule, ColumnsComponent],
   templateUrl: './task.component.html',
-  styleUrls: ['./task.component.css'],
 })
 export default class TaskComponent implements OnInit {
   private taskService = inject(TasksService);
