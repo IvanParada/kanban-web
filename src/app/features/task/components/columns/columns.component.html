@@ -1,8 +1,17 @@
 <section [ngClass]="bgClass" class="rounded-lg p-4 h-full" cdkDropList [id]="id" [cdkDropListData]="tasks"
     [cdkDropListConnectedTo]="connectedTo" (cdkDropListDropped)="onDrop($event)">
     <div class="flex items-center justify-between mb-3">
-        <h3 class="font-semibold">{{ title }}</h3>
-        <span class="badge" [ngClass]="badgeClass">{{ tasks.length }}</span>
+        <div class="flex items-center gap-2">
+
+            <h3 class="font-semibold">{{ title }}</h3>
+            <span class="badge" [ngClass]="badgeClass">{{ tasks.length }}</span>
+        </div>
+        <button type="button"
+            class="btn btn-sm bg-black text-white d-inline-flex align-items-center justify-content-center text-lg"
+            style="width: 2.25rem; height: 2.25rem; border-radius: .6rem;">
+            +
+        </button>
+
     </div>
 
     <div class="flex flex-col gap-4 min-h-10">
