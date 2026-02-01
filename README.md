@@ -1,59 +1,67 @@
 # KanbanWeb
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.0.
+Una aplicación web moderna de gestión de tareas tipo Kanban, construida con **Angular 21**, **Tailwind CSS** y **DaisyUI**. Este proyecto sigue principios de **Clean Architecture** para garantizar escalabilidad y mantenibilidad.
 
-## Development server
+## 🚀 Características Principales
 
-To start a local development server, run:
+*   **Gestión de Tareas**: Visualización y administración de tareas en un tablero Kanban.
+*   **Autenticación**: Sistema completo de Login y Registro de usuarios.
+*   **Arquitectura Modular**: Organización del código en módulos por características (Features), con capas Core y Shared definidas.
+*   **UI Moderna**: Interfaz de usuario responsiva y elegante utilizando Tailwind CSS 4 y componentes de DaisyUI 5.
 
-```bash
-ng serve
+## 🛠️ Tecnologías Utilizadas
+
+*   **Framework**: [Angular 21](https://angular.dev/)
+*   **Estilos**: [Tailwind CSS 4](https://tailwindcss.com/)
+*   **Componentes UI**: [DaisyUI 5](https://daisyui.com/)
+*   **Reactive Programming**: RxJS
+*   **Testing**: Vitest
+*   **Lenguaje**: TypeScript 5.9
+
+## 📂 Estructura del Proyecto
+
+El proyecto sigue una estructura basada en Clean Architecture:
+
+```
+src/app/
+├── core/       # Servicios singleton, interceptores, guards y modelos globales
+├── shared/     # Componentes, directivas y pipes reutilizables
+└── features/   # Módulos principales de negocio
+    ├── auth/   # Autenticación (Login, Registro)
+    └── task/   # Gestión del tablero y tareas
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## ⚙️ Instalación y Ejecución
 
-## Code scaffolding
+Sigue estos pasos para ejecutar el proyecto en tu entorno local:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+1.  **Clonar el repositorio**:
+    ```bash
+    git clone https://github.com/IvanParada/kanban-web.git
+    cd kanban-web
+    ```
 
-```bash
-ng generate component component-name
-```
+2.  **Instalar dependencias**:
+    ```bash
+    npm install
+    ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+3.  **Iniciar el servidor de desarrollo**:
+    ```bash
+    npm start
+    # o ejecutar directamente: ng serve -o
+    ```
 
-```bash
-ng generate --help
-```
+4.  **Abrir la aplicación**:
+    Navega a `http://localhost:4200/` en tu navegador. La aplicación se recargará automáticamente si realizas cambios en el código.
 
-## Building
+## 📦 Scripts Disponibles
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+*   `npm start`: Inicia el servidor de desarrollo.
+*   `npm run build`: Compila la aplicación para producción en el directorio `dist/`.
+*   `npm test`: Ejecuta las pruebas unitarias.
+*   `npm run watch`: Compila en modo desarrollo y observa cambios.
 
 ```bash
-ng e2e
+npm test
 ```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
