@@ -122,5 +122,16 @@ export default class TaskComponent implements OnInit {
     this.drawerOpen.set(false);
   }
 
+  onTaskCreated(task: Task) {
+    this.tasks = [task, ...this.tasks];
+    this.buildColumns(this.tasks);
+    this.cdr.markForCheck();
+  }
 
+  onTaskDeleted(taskId: string) {
+    this.tasks = this.tasks.filter(t => t.id !== taskId);
+    this.buildColumns(this.tasks);
+    this.cdr.markForCheck();
+    this.closeDrawer();
+  }
 }

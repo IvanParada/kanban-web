@@ -5,10 +5,13 @@ import {
   Input,
   Output,
   signal,
-  effect
+  effect,
+  inject
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Task } from '../../interfaces/task.models';
+import { TasksService } from '../../services/task.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 
 @Component({
   selector: 'app-task-detail',
@@ -23,9 +26,12 @@ export class TaskDetailComponent {
   @Input() loading = false;
 
   @Output() closed = new EventEmitter<void>();
+  @Output() deleted = new EventEmitter<string>();
 
   private loaded = signal<Set<string>>(new Set());
   private errored = signal<Set<string>>(new Set());
+  private TaskService = inject(TasksService);
+  private toastService = inject(ToastService);
 
   constructor() {
     effect(() => {
@@ -69,5 +75,19 @@ export class TaskDetailComponent {
 
   isImgErrored(id: string) {
     return this.errored().has(id);
+  }
+
+  deleteTask() {
+    this.TaskService.deleteTask(this.task?.id!).subscribe({
+      next: () => {
+        this.toastService.success('Tarea eliminada correctamente');
+        this.deleted.emit(this.task?.id!);
+        this.closed.emit();
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastService.error('Error al eliminar la tarea');
+      }
+    });
   }
 }

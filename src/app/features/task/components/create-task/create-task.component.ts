@@ -3,6 +3,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { FormBuilder, Validators } from "@angular/forms";
 import { signal } from "@angular/core";
 import { TasksService } from "../../services/task.service";
+import { ToastService } from "../../../../shared/components/toast/toast.service";
 import { TaskState, Task, ConfirmImagePayload } from "../../interfaces/task.models";
 import { NgClass } from "@angular/common";
 import { forkJoin, switchMap, EMPTY, finalize, map, of } from "rxjs";
@@ -21,6 +22,7 @@ type StateBadgeConfig = {
 export class CreateTaskComponent {
   private readonly fb = inject(FormBuilder);
   private readonly taskService = inject(TasksService);
+  private readonly toastService = inject(ToastService);
 
   @Input({ required: true }) state!: TaskState;
   @Output() taskCreated = new EventEmitter<Task>();
@@ -130,10 +132,12 @@ export class CreateTaskComponent {
         this.form.reset({ title: '', description: '' });
         this.selectedFiles.set([]);
         this.open.set(false);
+        this.toastService.success('Tarea creada correctamente');
       },
       error: (err) => {
         console.error(err);
         this.apiError.set('Error al crear la tarea o subir archivos.');
+        this.toastService.error('Error al crear la tarea');
       }
     });
   }

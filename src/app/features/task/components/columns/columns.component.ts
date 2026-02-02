@@ -23,6 +23,7 @@ export class ColumnsComponent {
 
   @Output() dropped = new EventEmitter<{ event: CdkDragDrop<Task[]>; column: ColumnId }>();
 
+  @Output() taskCreated = new EventEmitter<Task>();
   @Output() taskSelected = new EventEmitter<Task>();
 
   onTaskSelected(task: Task) {
