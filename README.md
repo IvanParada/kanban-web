@@ -70,3 +70,13 @@ Sigue estos pasos para ejecutar el proyecto en tu entorno local:
 ```bash
 npm test
 ```
+
+
+##Imagenes
+<img width="1912" height="947" alt="1 login" src="https://github.com/user-attachments/assets/254ec925-40cb-4761-87c7-6a2dca438c17" />
+<img width="1914" height="941" alt="2 dashboard" src="https://github.com/user-attachments/assets/bf4b4737-93c9-4521-9bda-f5046deff298" />
+<img width="1911" height="943" alt="3 create_task" src="https://github.com/user-attachments/assets/f3017eb0-90c8-4ccc-a1b0-c1bed08be530" />
+<img width="1912" height="945" alt="4 view_task" src="https://github.com/user-attachments/assets/dc52b9d6-e56d-47dd-b384-15e9b9a997c3" />
+<img width="1914" height="946" alt="5 update_task" src="https://github.com/user-attachments/assets/c20332ff-8bf3-4282-9c7e-ad6e10928bf7" />
+
+
