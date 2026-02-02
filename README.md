@@ -2,6 +2,11 @@
 
 Una aplicación web moderna de gestión de tareas tipo Kanban, construida con **Angular 21**, **Tailwind CSS** y **DaisyUI**. Este proyecto sigue principios de **Clean Architecture** para garantizar escalabilidad y mantenibilidad.
 
+json
+```
+https://kanban-web-orpin.vercel.app
+```
+
 ## 🚀 Características Principales
 
 *   **Gestión de Tareas**: Visualización y administración de tareas en un tablero Kanban.
