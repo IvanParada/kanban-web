@@ -5,41 +5,46 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-register',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink],
-    templateUrl: './register.component.html',
-    styleUrl: './register.component.css'
+  selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.css',
 })
 export default class RegisterComponent {
-    private _fb = inject(FormBuilder);
-    private _authService = inject(AuthService);
-    private _router = inject(Router);
+  private _fb = inject(FormBuilder);
+  private _authService = inject(AuthService);
+  private _router = inject(Router);
 
-    registerForm: FormGroup = this._fb.group({
-        name: ['', [Validators.required, Validators.minLength(2)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+  isLoading = signal(false);
 
-    errorMessage = signal<string | null>(null);
+  registerForm: FormGroup = this._fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
 
-    onSubmit() {
-        if (this.registerForm.invalid) {
-            this.registerForm.markAllAsTouched();
-            return;
-        }
+  errorMessage = signal<string | null>(null);
 
-        const { name, email, password } = this.registerForm.value;
-
-        this._authService.register(name, email, password).subscribe({
-            next: () => {
-                this._router.navigateByUrl('/');
-            },
-            error: (err) => {
-                this.errorMessage.set('Registro fallido. Por favor, intenta de nuevo.');
-                setTimeout(() => this.errorMessage.set(null), 3000);
-            }
-        });
+  onSubmit() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
     }
+    this.isLoading.set(true);
+
+    const { name, email, password } = this.registerForm.value;
+
+    this._authService.register(name, email, password).subscribe({
+      next: () => {
+        this._router.navigateByUrl('/');
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.errorMessage.set('Registro fallido. Por favor, intenta de nuevo.');
+        setTimeout(() => this.errorMessage.set(null), 3000);
+        this.isLoading.set(false);
+      },
+    });
+  }
 }
