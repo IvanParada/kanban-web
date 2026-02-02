@@ -6,12 +6,13 @@ import {
   Output,
   signal,
   effect,
-  inject
+  inject,
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Task } from '../../interfaces/task.models';
+import { Task, TaskState } from '../../interfaces/task.models';
 import { TasksService } from '../../services/task.service';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
+import { StateBadgeConfig } from '../create-task/create-task.component';
 
 @Component({
   selector: 'app-task-detail',
@@ -32,6 +33,25 @@ export class TaskDetailComponent {
   private errored = signal<Set<string>>(new Set());
   private TaskService = inject(TasksService);
   private toastService = inject(ToastService);
+
+  stateConfig: Record<TaskState, StateBadgeConfig> = {
+    TODO: {
+      label: 'Por hacer',
+      class: 'badge-neutral',
+    },
+    PENDING: {
+      label: 'Pendiente',
+      class: 'badge-info',
+    },
+    IN_PROGRESS: {
+      label: 'En progreso',
+      class: 'badge-warning',
+    },
+    DONE: {
+      label: 'Finalizado',
+      class: 'badge-success',
+    },
+  };
 
   constructor() {
     effect(() => {
@@ -87,7 +107,7 @@ export class TaskDetailComponent {
       error: (err) => {
         console.error(err);
         this.toastService.error('Error al eliminar la tarea');
-      }
+      },
     });
   }
 }
