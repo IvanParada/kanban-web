@@ -35,74 +35,159 @@
             <div class="h-40 w-full bg-base-200 rounded-xl"></div>
           </div>
         } @else {
-          <h2 class="text-4xl font-bold text-base-content mb-6">
-            {{ task?.title }}
-          </h2>
+          @if (!editing()) {
+            <h2 class="text-4xl font-bold text-base-content mb-6">
+              {{ task?.title }}
+            </h2>
 
-          <div class="space-y-8">
-            <div class="space-y-2">
-              <div class="text-xs font-semibold text-base-content/50">Descripción</div>
-              <p class="text-sm text-base-content/80">{{ task?.description }}</p>
-            </div>
-
-            @if ((task?.images?.length ?? 0) > 0) {
-              <div class="space-y-3">
-                <div class="text-xs font-semibold text-base-content/50">Imágenes</div>
-
-                <div class="grid grid-cols-2 gap-4">
-                  @for (img of task!.images!; track img.id) {
-                    <a class="block" target="_blank" [href]="img.signedUrl ?? img.url">
-                      <div class="relative w-full h-40 rounded-2xl overflow-hidden">
-                        @if (!isImgLoaded(img.id) && !isImgErrored(img.id)) {
-                          <div class="absolute inset-0 skeleton"></div>
-                        }
-
-                        @if (isImgErrored(img.id)) {
-                          <div
-                            class="absolute inset-0 bg-base-200 flex items-center justify-center text-xs text-base-content/60"
-                          >
-                            No se pudo cargar
-                          </div>
-                        }
-
-                        <img
-                          class="w-full h-40 object-cover transition-opacity duration-300"
-                          [class.opacity-0]="!isImgLoaded(img.id)"
-                          [class.opacity-100]="isImgLoaded(img.id)"
-                          [src]="img.signedUrl ?? img.url"
-                          [alt]="img.originalName"
-                          loading="lazy"
-                          decoding="async"
-                          (load)="onImgLoad(img.id)"
-                          (error)="onImgError(img.id)"
-                        />
-                      </div>
-                    </a>
-                  }
-                </div>
+            <div class="space-y-8">
+              <div class="space-y-2">
+                <div class="text-xs font-semibold text-base-content/50">Descripción</div>
+                <p class="text-sm text-base-content/80">
+                  {{ task?.description }}
+                </p>
               </div>
-            }
-          </div>
+            </div>
+          }
+
+          @if (editing()) {
+            <form [formGroup]="form" class="space-y-8">
+              <div>
+                <input
+                  class="w-full bg-transparent text-3xl font-light placeholder:text-base-content/20 outline-none"
+                  placeholder="Título"
+                  formControlName="title"
+                />
+                @if (form.controls.title.touched && form.controls.title.invalid) {
+                  <div class="mt-2 text-xs text-error">
+                    El título es requerido (mínimo 2 caracteres).
+                  </div>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-xs font-semibold text-base-content/50">Descripción</div>
+                <textarea
+                  class="textarea w-full min-h-32 resize-none border-0 font-light"
+                  placeholder="Describe los objetivos y requerimientos..."
+                  formControlName="description"
+                ></textarea>
+              </div>
+
+              @if (apiError()) {
+                <div class="text-sm text-error">
+                  {{ apiError() }}
+                </div>
+              }
+            </form>
+          }
+
+          @if ((task?.images?.length ?? 0) > 0) {
+            <div class="mt-8 space-y-3">
+              <div class="text-xs font-semibold text-base-content/50">Imágenes</div>
+
+              <div class="grid grid-cols-2 gap-4">
+                @for (img of task!.images!; track img.id) {
+                  <a class="block" target="_blank" [href]="img.signedUrl ?? img.url">
+                    <div class="relative w-full h-40 rounded-2xl overflow-hidden">
+                      @if (!isImgLoaded(img.id) && !isImgErrored(img.id)) {
+                        <div class="absolute inset-0 skeleton"></div>
+                      }
+
+                      @if (isImgErrored(img.id)) {
+                        <div
+                          class="absolute inset-0 bg-base-200 flex items-center justify-center text-xs text-base-content/60"
+                        >
+                          No se pudo cargar
+                        </div>
+                      }
+
+                      <img
+                        class="w-full h-40 object-cover transition-opacity duration-300"
+                        [class.opacity-0]="!isImgLoaded(img.id)"
+                        [class.opacity-100]="isImgLoaded(img.id)"
+                        [src]="img.signedUrl ?? img.url"
+                        [alt]="img.originalName"
+                        loading="lazy"
+                        decoding="async"
+                        (load)="onImgLoad(img.id)"
+                        (error)="onImgError(img.id)"
+                      />
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          }
         }
-        <div class="text-xs text-base-content/50 mt-4 space-y-2">
+
+        <div class="text-xs text-base-content/50 mt-6 space-y-2">
           <div class="font-semibold">
             Creada:
-            <span class="font-extralight">{{ task?.createdAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
+            <span class="font-extralight">
+              {{ task?.createdAt | date: 'dd/MM/yyyy, HH:mm' }}
+            </span>
           </div>
           <div class="font-semibold">
             Actualizada:
-            <span class="font-extralight">{{ task?.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
+            <span class="font-extralight">
+              {{ task?.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}
+            </span>
           </div>
         </div>
       </div>
 
-      <div class="bg-base-100 px-8 py-5 border-base-200">
-        <button class="btn btn-neutral rounded-full w-full mt-4" type="button" (click)="close()">
-          Cerrar
-        </button>
-        <button class="btn btn-error rounded-full w-full mt-4" type="button" (click)="deleteTask()">
-          🗑️ Eliminar
-        </button>
+      <div class="bg-base-100 px-8 py-5">
+        @if (!editing()) {
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              class="btn btn-info rounded-full w-full mt-4"
+              type="button"
+              (click)="startEdit()"
+              [disabled]="deleting()"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn btn-error rounded-full w-full mt-4"
+              type="button"
+              (click)="deleteTask()"
+              [disabled]="deleting()"
+            >
+              Eliminar
+            </button>
+          </div>
+
+          <button
+            [disabled]="deleting()"
+            class="btn btn-neutral rounded-full w-full mt-4"
+            type="button"
+            (click)="close()"
+          >
+            Cerrar
+          </button>
+        } @else {
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              class="btn btn-neutral rounded-full w-full mt-4"
+              type="button"
+              [disabled]="saving()"
+              (click)="cancelEdit()"
+            >
+              Cancelar
+            </button>
+
+            <button
+              class="btn btn-success rounded-full w-full mt-4"
+              type="button"
+              [disabled]="saving()"
+              (click)="save()"
+            >
+              Guardar
+            </button>
+          </div>
+        }
       </div>
     </div>
   </div>

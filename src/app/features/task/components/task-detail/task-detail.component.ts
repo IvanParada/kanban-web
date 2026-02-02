@@ -9,6 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Task, TaskState } from '../../interfaces/task.models';
 import { TasksService } from '../../services/task.service';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
@@ -17,7 +18,7 @@ import { StateBadgeConfig } from '../create-task/create-task.component';
 @Component({
   selector: 'app-task-detail',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, ReactiveFormsModule],
   templateUrl: './task-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -28,40 +29,87 @@ export class TaskDetailComponent {
 
   @Output() closed = new EventEmitter<void>();
   @Output() deleted = new EventEmitter<string>();
+  @Output() updated = new EventEmitter<Task>(); // <-- NUEVO
+
+  private fb = inject(FormBuilder);
+  private taskService = inject(TasksService);
+  private toastService = inject(ToastService);
 
   private loaded = signal<Set<string>>(new Set());
   private errored = signal<Set<string>>(new Set());
-  private TaskService = inject(TasksService);
-  private toastService = inject(ToastService);
+
+  editing = signal(false);
+  saving = signal(false);
+  deleting = signal(false);
+  apiError = signal<string | null>(null);
+
+  form = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.minLength(2)]],
+    description: [''],
+  });
 
   stateConfig: Record<TaskState, StateBadgeConfig> = {
-    TODO: {
-      label: 'Por hacer',
-      class: 'badge-neutral',
-    },
-    PENDING: {
-      label: 'Pendiente',
-      class: 'badge-info',
-    },
-    IN_PROGRESS: {
-      label: 'En progreso',
-      class: 'badge-warning',
-    },
-    DONE: {
-      label: 'Finalizado',
-      class: 'badge-success',
-    },
+    TODO: { label: 'Por hacer', class: 'badge-neutral' },
+    PENDING: { label: 'Pendiente', class: 'badge-info' },
+    IN_PROGRESS: { label: 'En progreso', class: 'badge-warning' },
+    DONE: { label: 'Finalizado', class: 'badge-success' },
   };
 
   constructor() {
     effect(() => {
-      const id = this.task?.id;
       this.resetImageStates();
     });
   }
 
   close() {
+    this.editing.set(false);
     this.closed.emit();
+  }
+
+  startEdit() {
+    if (!this.task) return;
+
+    this.apiError.set(null);
+    this.form.reset({
+      title: this.task.title ?? '',
+      description: this.task.description ?? '',
+    });
+
+    this.editing.set(true);
+  }
+
+  cancelEdit() {
+    this.apiError.set(null);
+    this.editing.set(false);
+  }
+
+  save() {
+    this.apiError.set(null);
+    if (!this.task) return;
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.saving.set(true);
+
+    const { title, description } = this.form.getRawValue();
+
+    this.taskService.updateTask(this.task.id, { title, description }).subscribe({
+      next: (updatedTask) => {
+        this.toastService.success('Tarea actualizada');
+        this.updated.emit(updatedTask);
+        this.editing.set(false);
+        this.saving.set(false);
+      },
+      error: (err) => {
+        console.error(err);
+        this.apiError.set('Error al actualizar la tarea.');
+        this.toastService.error('Error al actualizar');
+        this.saving.set(false);
+      },
+    });
   }
 
   resetImageStates() {
@@ -98,15 +146,20 @@ export class TaskDetailComponent {
   }
 
   deleteTask() {
-    this.TaskService.deleteTask(this.task?.id!).subscribe({
+    if (!this.task?.id) return;
+    this.deleting.set(true);
+
+    this.taskService.deleteTask(this.task.id).subscribe({
       next: () => {
         this.toastService.success('Tarea eliminada correctamente');
-        this.deleted.emit(this.task?.id!);
+        this.deleted.emit(this.task?.id);
         this.closed.emit();
+        this.deleting.set(false);
       },
       error: (err) => {
         console.error(err);
         this.toastService.error('Error al eliminar la tarea');
+        this.deleting.set(false);
       },
     });
   }
