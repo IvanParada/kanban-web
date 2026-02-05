@@ -6,46 +6,41 @@ import { PublicLayoutComponent } from './shared/components/public-layout-compone
 import { PrivateLayoutComponent } from './shared/components/private-layout-component/private-layout.component';
 
 export const routes: Routes = [
-    {
-        path: 'auth',
-        component: PublicLayoutComponent,
-        canActivate: [publicGuard],
-        children: [
-            {
-                path: 'login',
-                loadComponent: () =>
-                    import('./features/auth/login/login.component')
-            },
-            {
-                path: 'register',
-                loadComponent: () =>
-                    import('./features/auth/register/register.component')
-            },
-            { path: '', pathMatch: 'full', redirectTo: 'login' },
-        ],
-    },
+  {
+    path: 'auth',
+    component: PublicLayoutComponent,
+    canActivate: [publicGuard],
+    children: [
+      {
+        path: 'login',
+        loadComponent: () => import('./features/auth/login/login.component'),
+      },
+      {
+        path: 'register',
+        loadComponent: () => import('./features/auth/register/register.component'),
+      },
+      { path: '', pathMatch: 'full', redirectTo: 'login' },
+    ],
+  },
 
-    {
+  {
+    path: '',
+    component: PrivateLayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      {
         path: '',
-        component: PrivateLayoutComponent,
-        canActivate: [authGuard],
-        children: [
-            {
-                path: '',
-                pathMatch: 'full',
-                loadComponent: () =>
-                    import('./features/task/task.component'),
-            },
-            // aquí puedes agregar más rutas privadas:
-            // { path: 'board', loadComponent: () => import(...).then(m => m.BoardComponent) },
-        ],
-    },
+        pathMatch: 'full',
+        loadComponent: () => import('./features/task/task.component'),
+      },
+    ],
+  },
 
-    { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule],
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
