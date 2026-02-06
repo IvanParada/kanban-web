@@ -1,12 +1,12 @@
-@if (loading) {
+@if (loading()) {
   <app-skeleton></app-skeleton>
 }
 
-@if (errorMsg) {
-  <h1 class="mx-10 my-5 text-error text-center">{{ errorMsg }}</h1>
+@if (errorMsg()) {
+  <h1 class="mx-10 my-5 text-error text-center">{{ errorMsg() }}</h1>
 }
 
-@if (!loading && !errorMsg) {
+@if (!loading() && !errorMsg()) {
   <div
     cdkDropListGroup
     class="mx-10 my-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 h-[80vh]"
@@ -17,7 +17,7 @@
       badgeClass="badge-neutral"
       bgClass="bg-gray-100"
       titleClass="text-black"
-      [tasks]="columns.TODO"
+      [tasks]="columns().TODO"
       [connectedTo]="['TODO', 'PENDING', 'IN_PROGRESS', 'DONE']"
       (dropped)="drop($event.event, $event.column)"
       (taskSelected)="onTaskSelected($event)"
@@ -30,7 +30,7 @@
       badgeClass="badge-info"
       bgClass="bg-blue-100"
       titleClass="text-info"
-      [tasks]="columns.PENDING"
+      [tasks]="columns().PENDING"
       [connectedTo]="['TODO', 'PENDING', 'IN_PROGRESS', 'DONE']"
       (dropped)="drop($event.event, $event.column)"
       (taskSelected)="onTaskSelected($event)"
@@ -43,7 +43,7 @@
       badgeClass="badge-warning"
       bgClass="bg-yellow-100"
       titleClass="text-warning"
-      [tasks]="columns.IN_PROGRESS"
+      [tasks]="columns().IN_PROGRESS"
       [connectedTo]="['TODO', 'PENDING', 'IN_PROGRESS', 'DONE']"
       (dropped)="drop($event.event, $event.column)"
       (taskSelected)="onTaskSelected($event)"
@@ -56,7 +56,7 @@
       badgeClass="badge-success"
       bgClass="bg-green-100"
       titleClass="text-success"
-      [tasks]="columns.DONE"
+      [tasks]="columns().DONE"
       [connectedTo]="['TODO', 'PENDING', 'IN_PROGRESS', 'DONE']"
       (dropped)="drop($event.event, $event.column)"
       (taskSelected)="onTaskSelected($event)"

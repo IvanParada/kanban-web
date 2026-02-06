@@ -1,8 +1,8 @@
-import { Component, OnInit, inject, DestroyRef, ChangeDetectorRef, signal } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef, signal } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TasksService } from './services/task.service';
-import { Task, TaskState } from './interfaces/task.models';
+import { Task, KanbanTaskState } from './interfaces/task.models';
 import {
   CdkDragDrop,
   DragDropModule,
@@ -13,7 +13,7 @@ import { ColumnsComponent } from './components/columns/columns.component';
 import { SkeletonComponent } from './components/skeleton/skeleton.component';
 import { TaskDetailComponent } from './components/task-detail/task-detail.component';
 
-export type TaskColumns = Record<TaskState, Task[]>;
+export type TaskColumns = Record<KanbanTaskState, Task[]>;
 
 @Component({
   selector: 'app-task',
@@ -24,66 +24,69 @@ export type TaskColumns = Record<TaskState, Task[]>;
 export default class TaskComponent implements OnInit {
   private taskService = inject(TasksService);
   private destroyRef = inject(DestroyRef);
-  private cdr = inject(ChangeDetectorRef);
-  readonly columnOrder: TaskState[] = ['TODO', 'PENDING', 'IN_PROGRESS', 'DONE'];
+  readonly columnOrder: KanbanTaskState[] = ['TODO', 'PENDING', 'IN_PROGRESS', 'DONE'];
 
-  tasks: Task[] = [];
-  loading = false;
-  errorMsg: string | null = null;
-  columns: TaskColumns = { TODO: [], PENDING: [], IN_PROGRESS: [], DONE: [] };
+  tasks = signal<Task[]>([]);
+  loading = signal(false);
+  errorMsg = signal<string | null>(null);
+  columns = signal<TaskColumns>({ TODO: [], PENDING: [], IN_PROGRESS: [], DONE: [] });
+
+  readonly drawerOpen = signal(false);
+  readonly selectedTask = signal<Task | null>(null);
 
   ngOnInit(): void {
     this.getTasks();
   }
 
   private buildColumns(tasks: Task[]): void {
-    this.columns = { TODO: [], PENDING: [], IN_PROGRESS: [], DONE: [] };
+    const cols: TaskColumns = { TODO: [], PENDING: [], IN_PROGRESS: [], DONE: [] };
 
     for (const t of tasks) {
-      const key = t.state as TaskState;
-      if (this.columns[key]) this.columns[key].push(t);
-      else this.columns.PENDING.push(t);
+      const key = this.isTaskState(t.state) ? t.state : 'PENDING';
+      cols[key].push(t);
     }
+
+    this.columns.set(cols);
+  }
+
+  private isTaskState(v: any): v is KanbanTaskState {
+    return v === 'TODO' || v === 'PENDING' || v === 'IN_PROGRESS' || v === 'DONE';
   }
 
   getTasks(): void {
-    this.loading = true;
-    this.errorMsg = null;
-    this.cdr.markForCheck();
+    this.loading.set(true);
+    this.errorMsg.set(null);
 
     this.taskService
       .getTasks()
       .pipe(
         timeout(10000),
         finalize(() => {
-          this.loading = false;
-          this.cdr.markForCheck();
+          this.loading.set(false);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: (tasks) => {
-          this.tasks = tasks;
+          this.tasks.set(tasks);
           this.buildColumns(tasks);
-          this.cdr.markForCheck();
         },
         error: (err) => {
-          this.errorMsg =
+          this.errorMsg.set(
             err?.name === 'TimeoutError'
               ? 'La API no respondió (timeout)'
-              : (err?.error?.message ?? 'Error obteniendo tareas');
-          this.cdr.markForCheck();
+              : (err?.error?.message ?? 'Error obteniendo tareas'),
+          );
         },
       });
   }
 
-  drop(event: CdkDragDrop<Task[]>, targetState: TaskState) {
+  drop(event: CdkDragDrop<Task[]>, targetState: KanbanTaskState) {
     const prevList = event.previousContainer.data;
     const currList = event.container.data;
 
     if (event.previousContainer === event.container) {
       moveItemInArray(currList, event.previousIndex, event.currentIndex);
-      this.cdr.markForCheck();
       return;
     }
 
@@ -93,10 +96,7 @@ export default class TaskComponent implements OnInit {
     transferArrayItem(prevList, currList, event.previousIndex, event.currentIndex);
     movedTask.state = targetState;
 
-    const idx = this.tasks.findIndex((t) => t.id === movedTask.id);
-    if (idx >= 0) this.tasks[idx] = movedTask;
-
-    this.cdr.markForCheck();
+    this.tasks.update((arr) => arr.map((t) => (t.id === movedTask.id ? movedTask : t)));
 
     this.taskService
       .updateTaskState(movedTask.id, targetState)
@@ -108,14 +108,13 @@ export default class TaskComponent implements OnInit {
             transferArrayItem(currList, prevList, currentIndex, event.previousIndex);
           }
           movedTask.state = prevState;
-          this.errorMsg = 'No se pudo mover la tarea';
-          this.cdr.markForCheck();
+          this.tasks.update((arr) =>
+            arr.map((t) => (t.id === movedTask.id ? { ...t, state: prevState } : t)),
+          );
+          this.buildColumns(this.tasks());
         },
       });
   }
-
-  readonly drawerOpen = signal(false);
-  readonly selectedTask = signal<Task | null>(null);
 
   onTaskSelected(task: Task) {
     this.selectedTask.set(task);
@@ -127,25 +126,23 @@ export default class TaskComponent implements OnInit {
   }
 
   onTaskCreated(task: Task) {
-    this.tasks = [task, ...this.tasks];
-    this.buildColumns(this.tasks);
-    this.cdr.markForCheck();
+    this.tasks.set([task, ...this.tasks()]);
+    this.buildColumns(this.tasks());
     this.closeDrawer();
   }
 
   onTaskDeleted(taskId: string) {
-    this.tasks = this.tasks.filter((t) => t.id !== taskId);
-    this.buildColumns(this.tasks);
-    this.cdr.markForCheck();
+    this.tasks.set(this.tasks().filter((t) => t.id !== taskId));
+    this.buildColumns(this.tasks());
     this.closeDrawer();
   }
 
-  onTaskUpdated(res: any) {
-    const t: Task = res?.data ?? res;
-    this.selectedTask.set(t);
-    this.tasks = this.tasks.map((x) => (x.id === t.id ? t : x));
-    this.buildColumns(this.tasks);
-    this.cdr.markForCheck();
+  onTaskUpdated(task: Task) {
+    console.log('payload updated:', task);
+    console.log('task.id:', (task as any)?.id, 'task.data?.id:', (task as any)?.data?.id);
+    this.selectedTask.set(task);
+    this.tasks.set(this.tasks().map((x) => (x.id === task.id ? task : x)));
+    this.buildColumns(this.tasks());
     this.closeDrawer();
   }
 }

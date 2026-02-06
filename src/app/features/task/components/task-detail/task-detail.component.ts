@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Task, TaskState } from '../../interfaces/task.models';
+import { Task, KanbanTaskState } from '../../interfaces/task.models';
 import { TasksService } from '../../services/task.service';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { StateBadgeConfig } from '../create-task/create-task.component';
@@ -48,7 +48,7 @@ export class TaskDetailComponent {
     description: [''],
   });
 
-  stateConfig: Record<TaskState, StateBadgeConfig> = {
+  stateConfig: Record<KanbanTaskState, StateBadgeConfig> = {
     TODO: { label: 'Por hacer', class: 'badge-neutral' },
     PENDING: { label: 'Pendiente', class: 'badge-info' },
     IN_PROGRESS: { label: 'En progreso', class: 'badge-warning' },

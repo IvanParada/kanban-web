@@ -1,4 +1,10 @@
-<button class="btn btn-sm bg-black text-white" type="button" (click)="open.set(true)">+</button>
+<button
+  class="btn btn-sm bg-black hover:bg-gray-700 text-white"
+  type="button"
+  (click)="open.set(true)"
+>
+  +
+</button>
 
 @if (open()) {
   <div class="fixed inset-0 z-50">

@@ -7,6 +7,7 @@ import {
   ConfirmPayload,
   CreateTaskPayload,
   GetTasksResponseDto,
+  KanbanTaskState,
   PresignPayload,
   PresignResponse,
   Task,
@@ -32,12 +33,23 @@ export class TasksService {
       .pipe(map((resp) => resp.data));
   }
 
-  updateTask(id: string, payload: Partial<Task>): Observable<Task> {
-    return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`, payload);
+  // updateTask(id: string, payload: Partial<Task>): Observable<Task> {
+  //   return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`, payload);
+  // }
+
+  // updateTaskState(id: string, state: string): Observable<Task> {
+  //   return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`, { state });
+  // }
+  updateTask(id: string, payload: Partial<Task>) {
+    return this.http
+      .patch<ApiResponse<Task>>(`${this.baseUrl}/tasks/${id}`, payload)
+      .pipe(map((resp) => resp.data));
   }
 
-  updateTaskState(id: string, state: string): Observable<Task> {
-    return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`, { state });
+  updateTaskState(id: string, state: KanbanTaskState) {
+    return this.http
+      .patch<ApiResponse<Task>>(`${this.baseUrl}/tasks/${id}`, { state })
+      .pipe(map((resp) => resp.data));
   }
 
   createTask(task: CreateTaskPayload): Observable<Task> {

@@ -4,7 +4,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { signal } from '@angular/core';
 import { TasksService } from '../../services/task.service';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
-import { TaskState, Task, ConfirmImagePayload } from '../../interfaces/task.models';
+import { KanbanTaskState, Task, ConfirmImagePayload } from '../../interfaces/task.models';
 import { NgClass } from '@angular/common';
 import { forkJoin, switchMap, finalize, map, of } from 'rxjs';
 
@@ -24,10 +24,10 @@ export class CreateTaskComponent {
   private readonly taskService = inject(TasksService);
   private readonly toastService = inject(ToastService);
 
-  @Input({ required: true }) state!: TaskState;
+  @Input({ required: true }) state!: KanbanTaskState;
   @Output() taskCreated = new EventEmitter<Task>();
 
-  stateConfig: Record<TaskState, StateBadgeConfig> = {
+  stateConfig: Record<KanbanTaskState, StateBadgeConfig> = {
     TODO: {
       label: 'Por hacer',
       class: 'badge-neutral',
