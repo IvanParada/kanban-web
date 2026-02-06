@@ -29,7 +29,7 @@ export class TaskDetailComponent {
 
   @Output() closed = new EventEmitter<void>();
   @Output() deleted = new EventEmitter<string>();
-  @Output() updated = new EventEmitter<Task>(); // <-- NUEVO
+  @Output() updated = new EventEmitter<Task>();
 
   private fb = inject(FormBuilder);
   private taskService = inject(TasksService);
